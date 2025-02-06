@@ -1,0 +1,13 @@
+torch_geometric==2.2
+yacs 
+torchmetrics
+performer-pytorch
+ogb
+wandb
+torch_sparse
+torch_scatter
+fire
+ranky
+loguru
+pysnooper
+prettyprinter

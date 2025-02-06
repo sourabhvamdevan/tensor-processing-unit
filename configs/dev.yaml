@@ -1,0 +1,78 @@
+out_dir: tests/dev
+num_workers: 0
+num_threads: 16
+debug: false
+wandb:
+  use: false
+  entity: togglec
+  project: tpu-graph-v2
+dataset:
+  name: MixTPUGraphsNpz
+  format: PyG-MixTPUGraphsNpz
+  task: graph
+  task_type: ranking
+  transductive: False
+  dir: datasets/
+  source: nlp+xla
+  search: default
+  num_sample_config: 16
+  eval_num_sample_config: 128
+  input_feat_key: op_feat_enc_i
+  cache_in_memory: false
+  khop:
+    use: true
+    hops: 2
+    bidirect: true
+  # config_sampler: IntervalSampler
+  extra_cfg_feat_keys: ["extra_feat", "extra_read_ops_feat"]
+  extra_cfg_feat_dims: 316
+  valid_for_train: ['nlp_default']  # !
+
+train:
+  # mode: valid-tpu
+  # mode: inference-tpu
+  mode: custom_tpu
+  batch_size: 4
+  eval_period: 32
+  ckpt_period: 100
+  sampler: full_batch
+  auto_resume: true
+  adap_margin: false
+  gst:
+    sample_full_graph: true
+model:
+  type: custom_tpu_gnn
+  loss_fun: hinge
+  edge_decoding: dot
+  graph_pooling: add
+gnn:
+  layers_pre_mp: 1
+  layers_mp: 3
+  layers_post_mp: 3
+  dim_inner: 512
+  layer_type: sageconvlayer
+  stage_type: skipsum
+  batchnorm: False
+  act: prelu
+  dropout: 0.2
+  residual: true
+  agg: mean
+  normalize_adj: False
+  enc_config: true
+  freeze_body: false
+  dim_feat_enc: 224
+  avgmax_pooling: cat
+  cfg_feat_dim: 64 # ? 
+  cfg_feat_reweight: true # <<
+  late_fuse: true # <<
+  force_op_emb: true # <<
+optim:
+  optimizer: adam
+  base_lr: 0.0001
+  max_epoch: 1000
+  batch_accumulation: 1
+share:
+  dim_in: 286
+device: cuda
+seed: 0
+# model_ckpt: nlp-xla-random-0o6zd751-17.ckpt
